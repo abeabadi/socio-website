@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integraciones ERP — Socio</title>
+<meta name="description" content="Socio se conecta a SAP Business One, QuickBooks y otros ERPs. Datos en tiempo real desde tu WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8F6F2;--bg-w:#FFFFFF;--bg-dark:#09101A;--bg-dark2:#0F1926;
+  --em:#009966;--eml:#00BB78;--em-bg:rgba(0,153,102,.07);--em-bd:rgba(0,153,102,.2);
+  --amb:#D4860A;--red:#D94545;
+  --t1:#0C1018;--t2:#5B6978;--t3:#9BAAB8;
+  --bd:rgba(12,16,24,.09);--bd2:rgba(12,16,24,.05);
+  --f-display:'Plus Jakarta Sans',sans-serif;--f-body:'Plus Jakarta Sans',sans-serif;--f-mono:'Space Mono',monospace;
+  --r3:8px;--r4:12px;--r5:16px;--r6:20px;--r8:28px;
+  --ease:cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--t1);font-family:var(--f-body);font-size:16px;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}img,svg{display:block;max-width:100%}button{font-family:inherit;cursor:pointer;border:none;background:none}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:800;line-height:1.08;letter-spacing:-0.03em}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}h2{font-size:clamp(1.9rem,3.8vw,3rem)}h3{font-size:1.25rem;font-weight:700;letter-spacing:-0.02em}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px}.wrap-sm{max-width:800px;margin:0 auto;padding:0 28px}
+.up{opacity:0;transform:translateY(28px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+.up.in{opacity:1;transform:none}.d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:var(--r3);font-size:.9rem;font-weight:700;transition:all .2s var(--ease);cursor:pointer;min-height:44px;font-family:var(--f-display)}
+.btn-em{background:var(--em);color:#fff}.btn-em:hover{background:var(--eml);transform:translateY(-2px)}
+
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:300;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(9,16,26,.97);transition:background .25s var(--ease),-webkit-backdrop-filter .25s var(--ease),backdrop-filter .25s var(--ease)}
+#nav.scrolled{background:rgba(9,16,26,.98);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:1.15rem;font-weight:800;letter-spacing:-0.05em;color:#fff}
+.nav-links{display:flex;align-items:center;gap:28px}.nav-links a{font-size:.875rem;font-weight:600;color:rgba(255,255,255,.55);transition:color .2s var(--ease)}
+.nav-links a:hover,.nav-links a.active{color:#fff}.nav-cta{padding:10px 20px;font-size:.85rem;font-weight:700}
+
+/* BREADCRUMB */
+.breadcrumb{background:var(--bg-dark);padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.bc-inner{max-width:1160px;margin:0 auto;padding:0 28px;display:flex;align-items:center;gap:8px;font-size:.78rem;color:rgba(255,255,255,.35);font-weight:500}
+.bc-inner a{color:rgba(255,255,255,.5);transition:color .2s var(--ease);display:flex;align-items:center;gap:6px}
+.bc-inner a:hover{color:#fff}.bc-sep{color:rgba(255,255,255,.2)}.bc-current{color:rgba(255,255,255,.7)}
+
+/* HERO */
+#hero{background:var(--bg-dark);padding:100px 0 80px;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,153,102,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,153,102,.04) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 40% 50%,black 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 40% 50%,black 20%,transparent 100%);pointer-events:none}
+.hero-inner{max-width:1160px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:2}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid rgba(0,153,102,.3);color:var(--em);background:rgba(0,153,102,.08);margin-bottom:20px}
+.hero-tag .dot{width:5px;height:5px;border-radius:50%;background:var(--em);animation:pp 2s ease infinite}
+@keyframes pp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.hero-h1{color:#fff;margin-bottom:16px}.hero-h1 span{color:var(--em)}
+.hero-sub{color:rgba(255,255,255,.55);font-size:1.05rem;line-height:1.78;margin-bottom:32px;font-weight:400}
+.hero-ctas{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+/* VIDEO PLACEHOLDER */
+.video-card{background:var(--bg-dark2);border:1px solid rgba(255,255,255,.08);border-radius:var(--r8);overflow:hidden;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;cursor:pointer;transition:border-color .2s var(--ease)}
+.video-card:hover{border-color:rgba(0,153,102,.4)}
+.video-play{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:all .2s var(--spring)}
+.video-card:hover .video-play{background:rgba(0,153,102,.3);border-color:rgba(0,153,102,.5);transform:scale(1.08)}
+.video-caption{font-size:.78rem;color:rgba(255,255,255,.35);text-align:center;max-width:280px;line-height:1.5;padding:0 20px}
+
+/* SECTIONS */
+section:not(#hero){padding:80px 0}
+.section-head{margin-bottom:52px}
+.section-head .eyebrow{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--em);margin-bottom:14px}
+.section-head h2{margin-bottom:12px}
+.section-head p{color:var(--t2);font-size:.98rem;max-width:520px}
+.section-head.center{text-align:center}.section-head.center p{margin:0 auto}
+
+/* QUERY GRID */
+#queries{background:var(--bg-w);border-top:1px solid var(--bd)}
+.q-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:var(--r6);overflow:hidden}
+.q-cell{background:var(--bg-w);padding:28px 26px;transition:background .15s var(--ease)}
+.q-cell:hover{background:var(--bg)}
+.q-icon{width:36px;height:36px;border-radius:var(--r3);background:var(--em-bg);border:1px solid var(--em-bd);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.q-cell h3{font-size:1rem;margin-bottom:8px}
+.q-cell p{font-size:.8rem;color:var(--t2);line-height:1.65}
+
+/* QA CARDS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.qa-card{background:var(--bg-w);border:1px solid var(--bd);border-radius:var(--r5);padding:28px;position:relative;overflow:hidden;transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .25s var(--spring)}
+.qa-card:hover{border-color:rgba(0,153,102,.3);box-shadow:0 8px 32px rgba(0,0,0,.07);transform:translateY(-3px)}
+.qa-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--em),transparent);opacity:0;transition:opacity .2s var(--ease)}
+.qa-card:hover::before{opacity:1}
+.qa-q{margin-bottom:14px}
+.qa-bubble{background:#DCF8C6;color:#0C1018;padding:7px 13px;border-radius:14px 14px 2px 14px;font-size:.78rem;font-weight:500;display:inline-block;line-height:1.45}
+.qa-a{border-left:2px solid var(--em);padding:12px 16px;background:var(--em-bg);border-radius:0 var(--r3) var(--r3) 0;font-size:.83rem;color:var(--t1);line-height:1.72}
+.qa-a .n{font-family:var(--f-mono);color:var(--em);font-size:.82rem}
+.qa-a .w{font-family:var(--f-mono);color:var(--amb);font-size:.82rem}
+.qa-a .r{font-family:var(--f-mono);color:var(--red);font-size:.82rem}
+.qa-source{margin-top:10px;font-size:.65rem;color:var(--t3);display:flex;align-items:center;gap:5px;font-weight:500}
+
+/* STEPS */
+#how{background:var(--bg)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:52px}
+.step{position:relative}
+.step-num{font-family:var(--f-mono);font-size:.65rem;font-weight:700;color:var(--em);letter-spacing:.08em;margin-bottom:16px}
+.step-connector{position:absolute;top:10px;left:calc(100% - 16px);width:32px;height:1px;background:var(--bd)}
+.step h3{font-size:1.05rem;margin-bottom:10px}
+.step p{font-size:.85rem;color:var(--t2);line-height:1.7}
+.step-note{margin-top:12px;font-size:.75rem;color:var(--em);font-weight:600;display:flex;align-items:center;gap:5px}
+
+/* SYSTEMS */
+#systems{background:var(--bg-w);border-top:1px solid var(--bd)}
+.sys-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.sys-card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r5);padding:24px 22px;display:flex;align-items:flex-start;gap:16px;transition:border-color .2s var(--ease)}
+.sys-card:hover{border-color:rgba(12,16,24,.2)}
+.sys-initial{width:44px;height:44px;border-radius:var(--r3);background:var(--t1);color:var(--bg-w);display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.65rem;font-weight:700;flex-shrink:0}
+.sys-name{font-weight:700;font-size:.95rem;margin-bottom:4px}
+.sys-desc{font-size:.78rem;color:var(--t2);line-height:1.6;margin-bottom:10px}
+.sys-status{display:inline-block;font-size:.64rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:100px}
+.sc{background:var(--em-bg);color:var(--em);border:1px solid var(--em-bd)}
+.sa{background:rgba(12,16,24,.05);color:var(--t2);border:1px solid var(--bd)}
+.ss{background:rgba(12,16,24,.03);color:var(--t3);border:1px solid var(--bd2)}
+.sq{background:rgba(12,16,24,.03);color:var(--t3);border:1px solid var(--bd2)}
+
+/* SECURITY */
+#security{padding:72px 0;background:var(--bg-dark2);border-top:1px solid rgba(255,255,255,.05)}
+.sec-head{text-align:center;margin-bottom:44px}
+.sec-head h2{color:#fff;font-size:clamp(1.6rem,3vw,2.4rem);margin-bottom:10px}
+.sec-head p{color:rgba(255,255,255,.4);font-size:.9rem;max-width:480px;margin:0 auto}
+.sec-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+.sec-item{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.sec-icon{width:34px;height:34px;border-radius:var(--r3);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:.82rem;font-weight:700;color:rgba(255,255,255,.8);line-height:1.3}
+.sec-desc{font-size:.75rem;color:rgba(255,255,255,.35);line-height:1.65}
+
+/* CTA */
+#cta{background:var(--bg-dark);padding:80px 0;text-align:center}
+#cta h2{color:#fff;margin-bottom:16px}
+#cta p{color:rgba(255,255,255,.5);margin:0 auto 36px;max-width:440px;font-size:.98rem}
+
+/* FOOTER */
+footer{padding:48px 0 32px;border-top:1px solid var(--bd);background:var(--bg)}
+.footer-in{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;max-width:1160px;margin:0 auto;padding:0 28px}
+.footer-logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:1.1rem;letter-spacing:-0.05em;color:var(--t1)}
+.footer-tag{font-size:.75rem;color:var(--t3);margin-top:4px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}.footer-links a{font-size:.8rem;color:var(--t3);font-weight:500;transition:color .2s}.footer-links a:hover{color:var(--t2)}
+.footer-right{font-size:.75rem;color:var(--t3);text-align:right}.footer-right a{color:var(--t2)}
+
+/* RESPONSIVE */
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr}.q-grid{grid-template-columns:1fr 1fr}.qa-grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.step-connector{display:none}.sys-grid{grid-template-columns:1fr}.sec-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}.footer-in{flex-direction:column;align-items:flex-start}.footer-right{text-align:left}}
+@media(max-width:600px){.q-grid{grid-template-columns:1fr}.sec-grid{grid-template-columns:1fr}}
+a:focus-visible,button:focus-visible{outline:2px solid var(--em);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<nav id="nav" role="navigation" aria-label="Navegación principal">
+  <a href="index.html" class="nav-logo">
+    <svg width="32" height="36" viewBox="0 0 36 40" fill="none" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#00CC88"/><stop offset="1" stop-color="#008855"/></linearGradient></defs><rect x="0" y="0" width="36" height="30" rx="8" fill="url(#lg)"/><polygon points="0,22 0,36 13,28" fill="#007A4D"/><path d="M21 4 L13 17 H18.5 L15.5 26 L23 13 H17.5 L21 4Z" fill="white"/></svg>
+    socio
+  </a>
+  <div class="nav-links">
+    <a href="index.html#qa">¿Cómo funciona?</a>
+    <a href="index.html#pillars">Para quién</a>
+    <a href="erp.html" class="active">Integraciones</a>
+    <a href="assistant.html">Asistente</a>
+  </div>
+  <a href="index.html#form-section" class="btn btn-em nav-cta">Agenda una demo</a>
+</nav>
+
+<div class="breadcrumb" style="margin-top:64px">
+  <div class="bc-inner">
+    <a href="index.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 9.5l4.5-5L11 9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Socio</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Integraciones ERP</span>
+  </div>
+</div>
+
+<section id="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag up"><span class="dot" aria-hidden="true"></span>Solo lectura · Sin acceso de escritura</div>
+      <h1 class="hero-h1 up d1">Tu ERP,<br>en segundos.<br><span>Por WhatsApp.</span></h1>
+      <p class="hero-sub up d2">Socio se conecta a SAP Business One, QuickBooks, y otros sistemas. Cualquier pregunta sobre el negocio — ventas, márgenes, inventario, cobros, caja — la responde en tiempo real con el número exacto y la fuente citada.</p>
+      <div class="hero-ctas up d3">
+        <a href="index.html#form-section" class="btn btn-em">Agenda una demo <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7h9M7 2.5l4.5 4.5L7 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+    <div class="up d2">
+      <div class="video-card" role="button" tabindex="0" aria-label="Ver demostración de Socio con ERP real">
+        <div class="video-play" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M7 5l11 6-11 6V5z" fill="white"/></svg></div>
+        <p class="video-caption">Ve cómo Socio responde preguntas en vivo desde un ERP real.<br><strong style="color:rgba(255,255,255,.55)">Video próximamente</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="queries">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow up">Capacidades</span>
+      <h2 class="up d1">Todo lo que puedes preguntar</h2>
+      <p class="up d2">Datos en tiempo real desde tu ERP. Fuente citada en cada respuesta.</p>
+    </div>
+    <div class="q-grid">
+      <div class="q-cell up"><div class="q-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 14V6a1 1 0 011-1h4l2 2h6a1 1 0 011 1v6a1 1 0 01-1 1H3a1 1 0 01-1-1z" stroke="var(--em)" stroke-width="1.3"/></svg></div><h3>Ventas</h3><p>Del día, semana, mes. Por tienda, categoría, SKU o cliente. Con delta vs período anterior y proyección al cierre.</p></div>
+      <div class="q-cell up d1"><div class="q-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="var(--em)" stroke-width="1.3"/><path d="M9 5.5v3.5l2.5 2.5" stroke="var(--em)" stroke-width="1.3" stroke-linecap="round"/></svg></div><h3>Cuentas por cobrar</h3><p>Aging completo. Top deudores por monto y días vencido. Alertas cuando alguien cruza a 30+ días.</p></div>
+      <div class="q-cell up d2"><div class="q-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="1.5" stroke="var(--em)" stroke-width="1.3"/><path d="M6 4V3M12 4V3M2 7.5h14" stroke="var(--em)" stroke-width="1.3" stroke-linecap="round"/></svg></div><h3>Inventario</h3><p>Stock por tienda y bodega. Días de cobertura al ritmo actual. Alertas de reorden cuando quedan menos de 7 días.</p></div>
+      <div class="q-cell up"><div class="q-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 14l3-4 3 2 4-6" stroke="var(--em)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Márgenes brutos</h3><p>Por categoría, SKU y cliente. Comparado con el mes anterior. Identifica qué productos te dejan más y cuáles menos.</p></div>
+      <div class="q-cell up d1"><div class="q-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="9" rx="1.5" stroke="var(--em)" stroke-width="1.3"/><path d="M6 5V4a1 1 0 011-1h4a1 1 0 011 1v1" stroke="var(--em)" stroke-width="1.3"/><circle cx="9" cy="9.5" r="1.5" fill="var(--em)"/></svg></div><h3>Caja disponible</h3><p>Saldo actual por cuenta bancaria. Proyección de entradas y salidas a 30 días. ITBMS pendiente de remitir.</p></div>
+      <div class="q-cell up d2"><div class="q-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h5" stroke="var(--em)" stroke-width="1.3" stroke-linecap="round"/></svg></div><h3>Pedidos y órdenes</h3><p>Últimos pedidos por cliente o proveedor. Órdenes de compra abiertas. SKUs más y menos vendidos en cualquier período.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="practice" aria-labelledby="practice-title" style="padding:80px 0;background:var(--bg)">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="eyebrow up">Respuestas reales</span>
+      <h2 class="up d1" id="practice-title">Así se ve en la práctica.</h2>
+      <p class="up d2">Datos de un ERP conectado. Sin esperar. Sin abrir nada.</p>
+    </div>
+    <div class="qa-grid">
+      <div class="qa-card up">
+        <div class="qa-q"><div class="qa-bubble">"¿Cómo van las ventas del mes?"</div></div>
+        <div class="qa-a"><span class="n">$847,200</span> facturado en lo que va de junio. <span class="n" style="color:var(--em)">+6.8%</span> vs junio 2024. Proyección al cierre: <span class="n">$1.12M</span>. Boutique Castellanos jalando el 34%.</div>
+        <div class="qa-source"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.5" r="3.5" stroke="currentColor" stroke-width="1"/><path d="M4.5 3v2l1 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>SAP Business One · hace 2 min</div>
+      </div>
+      <div class="qa-card up d1">
+        <div class="qa-q"><div class="qa-bubble">"¿Quién me debe más de 60 días?"</div></div>
+        <div class="qa-a">Distribuidora La Bahía: <span class="w">$38,400</span> (73 días). Comercial Ríos y Asoc.: <span class="w">$21,800</span> (61 días). Total: <span class="w">$74,800</span> vencido.</div>
+        <div class="qa-source"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.5" r="3.5" stroke="currentColor" stroke-width="1"/><path d="M4.5 3v2l1 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>Cuentas por cobrar · hace 2 min</div>
+      </div>
+      <div class="qa-card up d2">
+        <div class="qa-q"><div class="qa-bubble">"¿Cuánto me queda del Polo Slim Azul M?"</div></div>
+        <div class="qa-a"><span class="n">14 unidades</span> en Multiplaza, <span class="n">9</span> en Miramar. <span class="r">4.2 días</span> de cobertura. Reorden urgente. Proveedor tarda 12 días.</div>
+        <div class="qa-source"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.5" r="3.5" stroke="currentColor" stroke-width="1"/><path d="M4.5 3v2l1 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>Inventario · hace 1 min</div>
+      </div>
+      <div class="qa-card up d3">
+        <div class="qa-q"><div class="qa-bubble">"¿Cuánto tengo en caja disponible?"</div></div>
+        <div class="qa-a"><span class="n">$248,400</span> disponibles. BAC USD: <span class="n">$182,400</span>. Banistmo: $41,200. Banco General: $20,600. ITBMS pendiente: <span class="w">$18,640</span>.</div>
+        <div class="qa-source"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true"><circle cx="4.5" cy="4.5" r="3.5" stroke="currentColor" stroke-width="1"/><path d="M4.5 3v2l1 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>Caja · hace 3 min</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow up">Proceso</span>
+      <h2 class="up d1">Tres pasos. Una vez.</h2>
+      <p class="up d2">Configuración única, a cargo del equipo de Socio. Tú no tocas nada.</p>
+    </div>
+    <div class="steps">
+      <div class="step up"><div class="step-num">01</div><div class="step-connector" aria-hidden="true"></div><h3>Acceso de solo lectura</h3><p>Le damos a Socio acceso de solo lectura a tu ERP. Nunca escribe. Nunca modifica. Solo consulta. El acceso se configura con tu equipo de IT en una sesión de 30 minutos.</p><div class="step-note"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1.5 6l3 3L10.5 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Solo lectura. Certificado.</div></div>
+      <div class="step up d1"><div class="step-num">02</div><div class="step-connector" aria-hidden="true"></div><h3>Contexto de tu negocio</h3><p>Configuramos el contexto específico de tu empresa: nombres de tiendas, categorías, proveedores clave, clientes importantes, mínimos de caja, umbrales de alerta.</p><div class="step-note"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1.5 6l3 3L10.5 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Personalizado a tu operación.</div></div>
+      <div class="step up d2"><div class="step-num">03</div><h3>Listo en 48 horas</h3><p>En 48 horas Socio conoce tu empresa. Sabe los nombres de tus tiendas, entiende el contexto de tu industria, y puede responder cualquier pregunta en segundos.</p><div class="step-note"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1.5 6l3 3L10.5 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Operativo en 48 horas.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="systems">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow up">Sistemas compatibles</span>
+      <h2 class="up d1">Certificado, disponible, o próximamente.</h2>
+      <p class="up d2">Si usas un sistema que no está en la lista, escríbenos. Cada integración tarda entre 2 y 6 semanas en implementarse.</p>
+    </div>
+    <div class="sys-grid">
+      <div class="sys-card up"><div class="sys-initial" aria-hidden="true">SAP</div><div><div class="sys-name">SAP Business One</div><div class="sys-desc">Integración completa vía Service Layer REST API. Ventas, AR, inventario, compras, finanzas, caja. Acceso certificado sin modificar tu SAP.</div><span class="sys-status sc">Certificado</span></div></div>
+      <div class="sys-card up d1"><div class="sys-initial" aria-hidden="true">QB</div><div><div class="sys-name">QuickBooks Online</div><div class="sys-desc">Facturación, cobros, gastos, reportes financieros en tiempo real vía API oficial de Intuit. Compatible con las versiones Plus y Advanced.</div><span class="sys-status sa">Disponible</span></div></div>
+      <div class="sys-card up d2"><div class="sys-initial" aria-hidden="true">DYN</div><div><div class="sys-name">Microsoft Dynamics 365</div><div class="sys-desc">Business Central y Finance & Operations. Integración en desarrollo con el equipo de Microsoft Partners en Panamá.</div><span class="sys-status ss">Próximamente</span></div></div>
+      <div class="sys-card up d3"><div class="sys-initial" aria-hidden="true">OTR</div><div><div class="sys-name">Otros sistemas</div><div class="sys-desc">Syscom, Exact, Odoo, Oracle NetSuite, Siigo, o cualquier sistema con API de consulta. Evaluamos cada caso por separado.</div><span class="sys-status sq">Consultar</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="security">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="up">Tus datos, seguros.</h2>
+      <p class="up d1">Acceso de solo lectura. Cifrado en tránsito. Sin entrenamiento de IA con tus datos.</p>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-item up"><div class="sec-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="rgba(255,255,255,.5)" stroke-width="1.1"/><path d="M5 7V5.5a3 3 0 016 0V7" stroke="rgba(255,255,255,.5)" stroke-width="1.1" stroke-linecap="round"/></svg></div><div class="sec-title">Solo lectura</div><div class="sec-desc">Nunca escribe ni modifica datos en tu ERP.</div></div>
+      <div class="sec-item up d1"><div class="sec-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2.5 4v4.5c0 3.5 2.4 6.7 5.5 7.5 3.1-.8 5.5-4 5.5-7.5V4L8 1.5z" stroke="rgba(255,255,255,.5)" stroke-width="1.1" stroke-linejoin="round"/></svg></div><div class="sec-title">TLS 1.3</div><div class="sec-desc">Todo viaja encriptado. Sin excepciones.</div></div>
+      <div class="sec-item up d2"><div class="sec-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="rgba(255,255,255,.5)" stroke-width="1.1"/><path d="M4.5 3V2.5a1 1 0 011-1h5a1 1 0 011 1V3M5.5 8l2 2 3.5-3.5" stroke="rgba(255,255,255,.5)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="sec-title">SOC 2 Tipo II</div><div class="sec-desc">Infraestructura certificada.</div></div>
+      <div class="sec-item up d3"><div class="sec-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,.5)" stroke-width="1.1"/><path d="M5.5 8l2 2 3-3" stroke="rgba(255,255,255,.5)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="sec-title">Sin entrenamiento de IA</div><div class="sec-desc">Tus datos no entrenan modelos.</div></div>
+      <div class="sec-item up d4"><div class="sec-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4.5h10v8a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 013 12.5v-8z" stroke="rgba(255,255,255,.5)" stroke-width="1.1"/><path d="M3 4.5L8 2l5 2.5" stroke="rgba(255,255,255,.5)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="sec-title">Datos en reposo encriptados</div><div class="sec-desc">Conversaciones y documentos siempre encriptados.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap-sm">
+    <h2 class="up">¿Tienes SAP Business One?<br>Socio está listo.</h2>
+    <p class="up d1">Agenda una demo de 30 minutos. Te mostramos la integración en vivo con datos reales.</p>
+    <a href="index.html#form-section" class="btn btn-em up d2">Agenda una demo <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7h9M7 2.5l4.5 4.5L7 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</section>
+
+<footer role="contentinfo">
+  <div class="footer-in">
+    <div><div class="footer-logo"><svg width="26" height="30" viewBox="0 0 36 40" fill="none" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#00CC88"/><stop offset="1" stop-color="#008855"/></linearGradient></defs><rect x="0" y="0" width="36" height="30" rx="8" fill="url(#lg2)"/><polygon points="0,22 0,36 13,28" fill="#007A4D"/><path d="M21 4 L13 17 H18.5 L15.5 26 L23 13 H17.5 L21 4Z" fill="white"/></svg>socio</div><div class="footer-tag">Tu negocio en tiempo real. Por WhatsApp.</div></div>
+    <nav class="footer-links"><a href="index.html#qa">¿Cómo funciona?</a><a href="index.html#pillars">Para quién</a><a href="erp.html">Integraciones</a><a href="assistant.html">Asistente</a><a href="#security">Seguridad</a></nav>
+    <div class="footer-right"><a href="mailto:hola@socio.ai">hola@socio.ai</a><br><span>Hecho en Panamá · 2026</span></div>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>24),{passive:true});
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target)}}),{threshold:.1,rootMargin:'0px 0px -36px 0px'});
+document.querySelectorAll('.up').forEach(el=>ro.observe(el));
+</script>
+</body>
+</html>

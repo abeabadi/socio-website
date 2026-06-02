@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente — Socio</title>
+<meta name="description" content="Socio agenda reuniones, redacta correos, procesa facturas y organiza tu semana. Todo por WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8F6F2;--bg-w:#FFFFFF;--bg-dark:#09101A;--bg-dark2:#0F1926;
+  --em:#009966;--eml:#00BB78;--em-bg:rgba(0,153,102,.07);--em-bd:rgba(0,153,102,.2);
+  --amb:#D4860A;--red:#D94545;
+  --t1:#0C1018;--t2:#5B6978;--t3:#9BAAB8;
+  --bd:rgba(12,16,24,.09);--bd2:rgba(12,16,24,.05);
+  --wa-bg:#0B141A;--wa-nav:#1F2C34;--wa-sent:#005C4B;--wa-recv:#1E2D3D;
+  --f-display:'Plus Jakarta Sans',sans-serif;--f-body:'Plus Jakarta Sans',sans-serif;--f-mono:'Space Mono',monospace;
+  --r3:8px;--r4:12px;--r5:16px;--r6:20px;--r8:28px;
+  --ease:cubic-bezier(.4,0,.2,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--t1);font-family:var(--f-body);font-size:16px;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}img,svg{display:block;max-width:100%}button{font-family:inherit;cursor:pointer;border:none;background:none}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:800;line-height:1.08;letter-spacing:-0.03em}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}h2{font-size:clamp(1.9rem,3.8vw,3rem)}h3{font-size:1.2rem;font-weight:700;letter-spacing:-0.02em}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px}.wrap-sm{max-width:800px;margin:0 auto;padding:0 28px}
+.up{opacity:0;transform:translateY(28px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+.up.in{opacity:1;transform:none}.d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:var(--r3);font-size:.9rem;font-weight:700;transition:all .2s var(--ease);cursor:pointer;min-height:44px;font-family:var(--f-display)}
+.btn-em{background:var(--em);color:#fff}.btn-em:hover{background:var(--eml);transform:translateY(-2px)}
+
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:300;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(9,16,26,.97);transition:background .25s var(--ease),-webkit-backdrop-filter .25s var(--ease),backdrop-filter .25s var(--ease)}
+#nav.scrolled{background:rgba(9,16,26,.98);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:1.15rem;font-weight:800;letter-spacing:-0.05em;color:#fff}
+.nav-links{display:flex;align-items:center;gap:28px}.nav-links a{font-size:.875rem;font-weight:600;color:rgba(255,255,255,.55);transition:color .2s var(--ease)}
+.nav-links a:hover,.nav-links a.active{color:#fff}.nav-cta{padding:10px 20px;font-size:.85rem;font-weight:700}
+
+/* BREADCRUMB */
+.breadcrumb{background:var(--bg-dark);padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.bc-inner{max-width:1160px;margin:0 auto;padding:0 28px;display:flex;align-items:center;gap:8px;font-size:.78rem;color:rgba(255,255,255,.35);font-weight:500}
+.bc-inner a{color:rgba(255,255,255,.5);transition:color .2s;display:flex;align-items:center;gap:6px}
+.bc-inner a:hover{color:#fff}.bc-sep{color:rgba(255,255,255,.2)}.bc-current{color:rgba(255,255,255,.7)}
+
+/* HERO */
+#hero{background:var(--bg-dark);padding:100px 0 80px;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,153,102,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,153,102,.04) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 40% 50%,black 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 40% 50%,black 20%,transparent 100%);pointer-events:none}
+.hero-inner{max-width:1160px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:2}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid rgba(0,153,102,.3);color:var(--em);background:rgba(0,153,102,.08);margin-bottom:20px}
+.hero-tag .dot{width:5px;height:5px;border-radius:50%;background:var(--em);animation:pp 2s ease infinite}
+@keyframes pp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.hero-h1{color:#fff;margin-bottom:16px}.hero-h1 span{color:var(--em)}
+.hero-sub{color:rgba(255,255,255,.55);font-size:1.05rem;line-height:1.78;margin-bottom:32px;font-weight:400}
+.hero-ctas{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+/* VIDEO */
+.video-card{background:var(--bg-dark2);border:1px solid rgba(255,255,255,.08);border-radius:var(--r8);aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;cursor:pointer;transition:border-color .2s var(--ease)}
+.video-card:hover{border-color:rgba(0,153,102,.4)}
+.video-play{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:all .2s var(--spring)}
+.video-card:hover .video-play{background:rgba(0,153,102,.3);border-color:rgba(0,153,102,.5);transform:scale(1.08)}
+.video-caption{font-size:.78rem;color:rgba(255,255,255,.35);text-align:center;max-width:280px;line-height:1.5;padding:0 20px}
+
+/* CAPABILITY SECTIONS */
+.cap-section{position:relative;overflow:hidden;padding:80px 0}
+.cap-section:nth-child(odd){background:var(--bg-w);border-top:1px solid var(--bd)}
+.cap-section:nth-child(even){background:var(--bg)}
+.cap-num-bg{position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:var(--f-mono);font-weight:700;font-size:clamp(8rem,20vw,18rem);color:rgba(0,153,102,.035);line-height:1;letter-spacing:-0.05em;pointer-events:none;user-select:none;white-space:nowrap}
+.cap-inner{max-width:1160px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;position:relative;z-index:2}
+.cap-inner.reverse{direction:rtl}.cap-inner.reverse>*{direction:ltr}
+.cap-label{font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--em);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cap-num{font-family:var(--f-mono);font-size:.68rem;color:var(--t3)}
+.cap-section h2{font-size:clamp(1.8rem,3.5vw,2.8rem);margin-bottom:14px}
+.cap-section p{color:var(--t2);font-size:.95rem;line-height:1.78;margin-bottom:28px}
+.cap-list{display:flex;flex-direction:column;gap:10px}
+.cl-item{display:flex;align-items:flex-start;gap:11px;font-size:.85rem;color:var(--t2);line-height:1.55}
+.cl-dot{width:5px;height:5px;border-radius:50%;background:var(--em);flex-shrink:0;margin-top:5px}
+
+/* MINI CHAT */
+.mini-chat{display:flex;flex-direction:column;gap:6px;padding:20px;background:var(--wa-bg);border-radius:var(--r6);border:1px solid rgba(255,255,255,.06)}
+.mc-label{font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:12px;font-family:var(--f-mono)}
+.mc-sent{max-width:85%;background:var(--wa-sent);color:#E9EDEF;border-radius:7.5px 7.5px 2px 7.5px;padding:7px 10px 4px;font-size:.72rem;line-height:1.47;align-self:flex-end;position:relative}
+.mc-sent::after{content:'';position:absolute;bottom:0;right:-6px;border:5px solid transparent;border-bottom-color:var(--wa-sent);border-right:0}
+.mc-recv{max-width:92%;background:var(--wa-recv);color:#E9EDEF;border-radius:7.5px 7.5px 7.5px 2px;padding:7px 10px 4px;font-size:.72rem;line-height:1.5;align-self:flex-start;position:relative}
+.mc-recv::after{content:'';position:absolute;bottom:0;left:-6px;border:5px solid transparent;border-bottom-color:var(--wa-recv);border-left:0}
+.mc-recv strong{color:#fff;font-weight:600}
+.mc-t{font-size:.52rem;color:rgba(233,237,239,.3);text-align:right;margin-top:2px}
+.mc-div{height:12px}
+.mc-vn{display:flex;align-items:center;gap:7px}
+.mc-vn-play{width:22px;height:22px;border-radius:50%;background:var(--em);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc-vn-wave{display:flex;align-items:center;gap:1.5px;flex:1}
+.mc-vn-b{border-radius:1px;background:rgba(255,255,255,.38)}
+.mc-draft{background:rgba(0,0,0,.18);border-radius:4px;padding:6px 8px;font-size:.65rem;line-height:1.5;color:rgba(233,237,239,.75);margin:4px 0;font-style:italic}
+
+/* CTA */
+#cta{background:var(--bg-dark);padding:80px 0;text-align:center}
+#cta h2{color:#fff;margin-bottom:16px}#cta p{color:rgba(255,255,255,.5);margin:0 auto 36px;max-width:440px;font-size:.98rem}
+
+/* FOOTER */
+footer{padding:48px 0 32px;border-top:1px solid var(--bd);background:var(--bg)}
+.footer-in{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;max-width:1160px;margin:0 auto;padding:0 28px}
+.footer-logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:1.1rem;letter-spacing:-0.05em;color:var(--t1)}
+.footer-tag{font-size:.75rem;color:var(--t3);margin-top:4px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}.footer-links a{font-size:.8rem;color:var(--t3);font-weight:500;transition:color .2s}.footer-links a:hover{color:var(--t2)}
+.footer-right{font-size:.75rem;color:var(--t3);text-align:right}.footer-right a{color:var(--t2)}
+
+/* RESPONSIVE */
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr}.cap-inner{grid-template-columns:1fr}.cap-inner.reverse{direction:ltr}.cap-num-bg{font-size:clamp(5rem,22vw,9rem);right:-10px}.nav-links{display:none}.footer-in{flex-direction:column;align-items:flex-start}.footer-right{text-align:left}}
+a:focus-visible,button:focus-visible{outline:2px solid var(--em);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<nav id="nav" role="navigation" aria-label="Navegación principal">
+  <a href="index.html" class="nav-logo">
+    <svg width="32" height="36" viewBox="0 0 36 40" fill="none" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#00CC88"/><stop offset="1" stop-color="#008855"/></linearGradient></defs><rect x="0" y="0" width="36" height="30" rx="8" fill="url(#lg)"/><polygon points="0,22 0,36 13,28" fill="#007A4D"/><path d="M21 4 L13 17 H18.5 L15.5 26 L23 13 H17.5 L21 4Z" fill="white"/></svg>
+    socio
+  </a>
+  <div class="nav-links">
+    <a href="index.html#qa">¿Cómo funciona?</a>
+    <a href="index.html#pillars">Para quién</a>
+    <a href="erp.html">Integraciones</a>
+    <a href="assistant.html" class="active">Asistente</a>
+  </div>
+  <a href="index.html#form-section" class="btn btn-em nav-cta">Agenda una demo</a>
+</nav>
+
+<div class="breadcrumb" style="margin-top:64px">
+  <div class="bc-inner">
+    <a href="index.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 9.5l4.5-5L11 9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Socio</a>
+    <span class="bc-sep">/</span><span class="bc-current">Asistente</span>
+  </div>
+</div>
+
+<section id="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag up"><span class="dot" aria-hidden="true"></span>Calendario · Correo · Documentos · Tareas</div>
+      <h1 class="hero-h1 up d1">No solo sabe.<br><span>Actúa.</span></h1>
+      <p class="hero-sub up d2">Agenda reuniones, redacta correos, procesa facturas, organiza tu semana. Todo por WhatsApp, todo en segundos. Sin salir del chat.</p>
+      <div class="hero-ctas up d3">
+        <a href="index.html#form-section" class="btn btn-em">Agenda una demo <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7h9M7 2.5l4.5 4.5L7 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+    <div class="up d2">
+      <div class="video-card" role="button" tabindex="0" aria-label="Ver demostración del asistente Socio">
+        <div class="video-play" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M7 5l11 6-11 6V5z" fill="white"/></svg></div>
+        <p class="video-caption">Ve el asistente en acción: calendario, cobros, documentos.<br><strong style="color:rgba(255,255,255,.55)">Video próximamente</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 CALENDARIO -->
+<section class="cap-section" id="calendario" aria-labelledby="cal-title">
+  <div class="cap-num-bg" aria-hidden="true">01</div>
+  <div class="cap-inner">
+    <div class="up">
+      <div class="cap-label"><span class="cap-num">01</span>Calendario</div>
+      <h2 id="cal-title">Agenda reuniones con un voice note.</h2>
+      <p>Di lo que necesitas y Socio crea el evento, manda el recordatorio y envía la invitación. Sin abrir el calendario. Sin escribir nada largo.</p>
+      <ul class="cap-list">
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>"Agendame con el banco el jueves a las 10am" — crea el evento, recordatorio 30 minutos antes</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Reschedule y cancelar: "mueve la junta del martes para el jueves"</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>"¿Qué tengo esta semana?" — te manda el resumen de tu agenda</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Invita a asistentes si tienes su correo</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Compatible con Google Calendar y Microsoft Outlook</li>
+      </ul>
+    </div>
+    <div class="up d2">
+      <div class="mini-chat" role="region" aria-label="Ejemplo: Calendario">
+        <div class="mc-label">Ejemplo real</div>
+        <div class="mc-sent"><div class="mc-vn"><div class="mc-vn-play" aria-hidden="true"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2.5 2l5 2.5-5 2.5V2z" fill="white"/></svg></div><div class="mc-vn-wave" aria-hidden="true" id="wave-cal"></div><span style="font-size:.55rem;color:rgba(233,237,239,.4)">0:08</span></div><div class="mc-t">7:35 ✓✓</div></div>
+        <div class="mc-recv">✅ Listo. Reunión con el banco — jueves 5 de junio, 10:00 am. Recordatorio 30 minutos antes.<br><br>¿Tienes el correo del ejecutivo para mandarle la invitación?<div class="mc-t">7:35</div></div>
+        <div class="mc-div"></div>
+        <div class="mc-sent">qué tengo esta semana<div class="mc-t">9:02 ✓✓</div></div>
+        <div class="mc-recv"><strong>Semana 2–6 de junio:</strong><br>Mar 3 — Junta de socios, 3pm<br>Jue 5 — Banco, 10am<br>Vie 6 — Revisar planilla<br><br>3 tareas pendientes.<div class="mc-t">9:02</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 CORREOS -->
+<section class="cap-section" id="correos" aria-labelledby="mail-title">
+  <div class="cap-num-bg" aria-hidden="true">02</div>
+  <div class="cap-inner reverse">
+    <div class="up">
+      <div class="cap-label"><span class="cap-num">02</span>Correo electrónico</div>
+      <h2 id="mail-title">Redacta y manda correos en tu tono.</h2>
+      <p>Socio redacta correos desde tu dirección. Tú apruebas, él manda. Compatible con Microsoft 365 y Gmail.</p>
+      <ul class="cap-list">
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Redacta correos y los manda desde tu cuenta con tu aprobación</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Resume lo importante de tu bandeja en el briefing diario</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Manda invitaciones de reunión a terceros</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>"Redactame una respuesta para el proveedor de Textiles Colón"</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Lo revisas antes de que salga.</li>
+      </ul>
+    </div>
+    <div class="up d2">
+      <div class="mini-chat" role="region" aria-label="Ejemplo: Correos">
+        <div class="mc-label">Ejemplo real</div>
+        <div class="mc-sent">redactame una disculpa a sandra villareal por el retraso en el pedido<div class="mc-t">10:15 ✓✓</div></div>
+        <div class="mc-recv"><strong>Borrador listo:</strong><div class="mc-draft">Estimada Sandra, le escribo para disculparme por el retraso en el Pedido #OC-4834. El despacho llegará el lunes 9 de junio. Quedo a su disposición.</div>¿Lo envío desde tu correo o quieres ajustar el tono?<div class="mc-t">10:15</div></div>
+        <div class="mc-div"></div>
+        <div class="mc-sent">envíalo<div class="mc-t">10:16 ✓✓</div></div>
+        <div class="mc-recv">✅ Correo enviado a sandra@comercialrios.com desde tu cuenta.<div class="mc-t">10:16</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 DOCUMENTOS -->
+<section class="cap-section" id="documentos" aria-labelledby="doc-title">
+  <div class="cap-num-bg" aria-hidden="true">03</div>
+  <div class="cap-inner">
+    <div class="up">
+      <div class="cap-label"><span class="cap-num">03</span>Documentos</div>
+      <h2 id="doc-title">Mándale una foto. Él lee el documento.</h2>
+      <p>Facturas, contratos, screenshots. Socio los procesa, extrae lo importante, y te avisa cuando vence algo.</p>
+      <ul class="cap-list">
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Foto de una factura: extrae vendor, monto, vencimiento y archiva</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Te avisa 3 días antes de que venza una factura pendiente</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Contrato por foto: te dice los puntos clave en 5 líneas</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Procesa screenshots de WhatsApp de clientes o proveedores</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Extrae plazos, montos, nombres y fechas automáticamente</li>
+      </ul>
+    </div>
+    <div class="up d2">
+      <div class="mini-chat" role="region" aria-label="Ejemplo: Documentos">
+        <div class="mc-label">Ejemplo real</div>
+        <div class="mc-sent">[Foto de factura adjunta]<div class="mc-t">14:22 ✓✓</div></div>
+        <div class="mc-recv"><strong>Factura procesada:</strong><br>Proveedor: Accesorios Pacífico S.A.<br>Monto: <strong>$11,200</strong><br>Vencimiento: 18 de junio de 2025<br><br>¿Quieres que te recuerde 3 días antes?<div class="mc-t">14:22</div></div>
+        <div class="mc-div"></div>
+        <div class="mc-sent">sí recuérdame<div class="mc-t">14:23 ✓✓</div></div>
+        <div class="mc-recv">✅ Recordatorio configurado para el 15 de junio a las 8am.<div class="mc-t">14:23</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 TAREAS -->
+<section class="cap-section" id="tareas" aria-labelledby="task-title">
+  <div class="cap-num-bg" aria-hidden="true">04</div>
+  <div class="cap-inner reverse">
+    <div class="up">
+      <div class="cap-label"><span class="cap-num">04</span>Tareas y pendientes</div>
+      <h2 id="task-title">Tu lista de pendientes. Por chat.</h2>
+      <p>Agrega tareas por voz o texto. Socio te las recuerda en el briefing mañanero y las agrega a tu app de Recordatorios.</p>
+      <ul class="cap-list">
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>"Agrega a mi lista: pagar planilla, llamar al contador, firmar el contrato"</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Las agrega a tu app de Recordatorios nativa del celular</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Te recuerda los pendientes del día en el briefing mañanero</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>"Ya terminé con el contador" — Socio la marca como hecha</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>"¿Qué tengo pendiente?" — te manda la lista completa</li>
+      </ul>
+    </div>
+    <div class="up d2">
+      <div class="mini-chat" role="region" aria-label="Ejemplo: Tareas">
+        <div class="mc-label">Ejemplo real</div>
+        <div class="mc-sent">agrega: pagar planilla, llamar al contador, firmar contrato con Ríos<div class="mc-t">8:04 ✓✓</div></div>
+        <div class="mc-recv">✅ 3 tareas agregadas:<br>• Pagar planilla<br>• Llamar al contador<br>• Firmar contrato con Ríos y Asoc.<br><br>Te las mando al Recordatorios.<div class="mc-t">8:04</div></div>
+        <div class="mc-div"></div>
+        <div class="mc-sent">ya llamé al contador<div class="mc-t">11:30 ✓✓</div></div>
+        <div class="mc-recv">✅ "Llamar al contador" marcada como hecha. Te quedan 2 pendientes.<div class="mc-t">11:30</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 BRIEFING -->
+<section class="cap-section" id="briefing" aria-labelledby="brief-title">
+  <div class="cap-num-bg" aria-hidden="true">05</div>
+  <div class="cap-inner">
+    <div class="up">
+      <div class="cap-label"><span class="cap-num">05</span>Briefing diario</div>
+      <h2 id="brief-title">Lo lees antes de levantarte.</h2>
+      <p>Cada mañana a la hora que eliges, Socio te manda un resumen de 6 a 8 líneas. No tienes que preguntar nada. Solo leerlo.</p>
+      <ul class="cap-list">
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Ventas de ayer con delta vs la semana pasada</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>AR vencido: quién sigue sin pagar y cuántos días</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Stock crítico: SKUs en rojo que necesitan reorden</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Próxima reunión del día con quién y a qué hora</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Tareas pendientes del día</li>
+      </ul>
+    </div>
+    <div class="up d2">
+      <div class="mini-chat" role="region" aria-label="Ejemplo de briefing">
+        <div class="mc-label">7:31 am — Sin que preguntes nada</div>
+        <div class="mc-recv"><strong>Buenos días.</strong> Aquí va el resumen del lunes.<br><br>Ventas ayer: <strong>$47,200</strong> (+8.1% vs lunes pasado).<br>AR vencido: <strong>$74,800</strong> — Distribuidora La Bahía sin pagar (73 días).<br>Stock crítico: Camisa Slim Azul M, 2.1 días.<br><br>Reunión con el banco: hoy a las 10am.<br>3 tareas pendientes.<br><br>Buen inicio de semana.<div class="mc-t">7:31</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 COBROS -->
+<section class="cap-section" id="cobros" aria-labelledby="col-title">
+  <div class="cap-num-bg" aria-hidden="true">06</div>
+  <div class="cap-inner reverse">
+    <div class="up">
+      <div class="cap-label"><span class="cap-num">06</span>Mensajes de cobro</div>
+      <h2 id="col-title">Con el saldo real. Con el historial real.</h2>
+      <p>No más redactar cobros desde cero. Socio sabe cuánto le debes, cuántos días lleva, y qué facturas están vencidas.</p>
+      <ul class="cap-list">
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>"Redactame un mensaje firme para Distribuidora La Bahía"</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Incluye el monto exacto, los días vencidos y el número de factura</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Elige el tono: formal, amable, o urgente</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Tú lo revisas y decides si enviarlo</li>
+        <li class="cl-item"><span class="cl-dot" aria-hidden="true"></span>Si tienes el WhatsApp del cliente, Socio puede mandarlo por ti</li>
+      </ul>
+    </div>
+    <div class="up d2">
+      <div class="mini-chat" role="region" aria-label="Ejemplo: Cobros">
+        <div class="mc-label">Ejemplo real</div>
+        <div class="mc-sent">redactame un cobro firme para distribuidora la bahía<div class="mc-t">10:04 ✓✓</div></div>
+        <div class="mc-recv">Aquí el borrador:<div class="mc-draft">Buenos días, Carlos. Le escribo respecto a la factura #INV-10482 por $38,400, con vencimiento del 22 de abril. Llevamos 73 días sin recibir el pago. ¿Podemos coordinar la regularización esta semana? Quedo a su disposición.</div>¿Lo envío o quieres ajustar algo?<div class="mc-t">10:04</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap-sm" style="text-align:center">
+    <h2 class="up">Todo en el mismo chat<br>donde ya vives.</h2>
+    <p class="up d1">Sin apps. Sin contraseñas. Sin aprender nada nuevo. Solo WhatsApp.</p>
+    <a href="index.html#form-section" class="btn btn-em up d2">Agenda una demo <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7h9M7 2.5l4.5 4.5L7 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</section>
+
+<footer role="contentinfo">
+  <div class="footer-in">
+    <div><div class="footer-logo"><svg width="26" height="30" viewBox="0 0 36 40" fill="none" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#00CC88"/><stop offset="1" stop-color="#008855"/></linearGradient></defs><rect x="0" y="0" width="36" height="30" rx="8" fill="url(#lg2)"/><polygon points="0,22 0,36 13,28" fill="#007A4D"/><path d="M21 4 L13 17 H18.5 L15.5 26 L23 13 H17.5 L21 4Z" fill="white"/></svg>socio</div><div class="footer-tag">Tu negocio en tiempo real. Por WhatsApp.</div></div>
+    <nav class="footer-links"><a href="index.html#qa">¿Cómo funciona?</a><a href="index.html#pillars">Para quién</a><a href="erp.html">Integraciones</a><a href="assistant.html">Asistente</a><a href="index.html#security">Seguridad</a></nav>
+    <div class="footer-right"><a href="mailto:hola@socio.ai">hola@socio.ai</a><br><span>Hecho en Panamá · 2026</span></div>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>24),{passive:true});
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target)}}),{threshold:.1,rootMargin:'0px 0px -36px 0px'});
+document.querySelectorAll('.up').forEach(el=>ro.observe(el));
+function wave(n){const h=[5,8,13,9,16,11,7,15,10,13,8,16];let s='';for(let i=0;i<n;i++){const v=h[i%h.length];s+=`<div class="mc-vn-b" style="width:2px;height:${v}px"></div>`}return s}
+const wc=document.getElementById('wave-cal');if(wc)wc.innerHTML=wave(24);
+</script>
+</body>
+</html>
